@@ -18,30 +18,27 @@ import java.net.URI;
 public class UserController {
 
     private final UserService userService;
-    private final UserMapper userMapper;
-
-    public UserController(UserService userService, UserMapper userMapper) {
+    //private final UserMapper userMapper;
+    //TODO userMapper belongs to service
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.userMapper = userMapper;
     }
 
     @PostMapping("/register")
     public ResponseEntity<UserDto> registerUser(@Valid @RequestBody CreateUserRequestDto createUserRequestDto) {
-        User newUser = userService.registerNewUser(createUserRequestDto);
-        UserDto createdUserDto = userMapper.convertToDto(newUser);
+        UserDto newUserDto = userService.registerNewUser(createUserRequestDto);
         URI location = ServletUriComponentsBuilder //very strange
                 .fromCurrentContextPath()
                 .path("/{id}") // /api/users/{id}
-                .buildAndExpand(newUser.getUserId())
+                .buildAndExpand(newUserDto.userId())
                 .toUri();
 
-        return ResponseEntity.created(location).body(createdUserDto); //201
+        return ResponseEntity.created(location).body(newUserDto); //201
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getUser(@PathVariable Long id) {
-        return  userService.findByUserId(id)
-                .map(userMapper::convertToDto)
+    public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
+        return  userService.getUserById(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
