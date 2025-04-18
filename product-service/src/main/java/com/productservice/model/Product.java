@@ -32,10 +32,10 @@ public class Product {
     @Column(name = "weight_g")
     private Integer weight;
 
-//    @Column(name = "sku", unique = true, length = 100) // Stock Keeping Unit
-//    private String sku;
-
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE) // LAZY fetch is generally preferred for performance
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
+
+    //    @Column(name = "sku", unique = true, length = 100) // Stock Keeping Unit
+//    private String sku;
 }

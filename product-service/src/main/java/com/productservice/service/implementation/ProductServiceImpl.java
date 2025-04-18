@@ -2,12 +2,15 @@ package com.productservice.service.implementation;
 
 import com.productservice.dto.CreateProductRequestDto;
 import com.productservice.dto.ProductDto;
-import com.productservice.mappers.ProductMapper;
+import com.productservice.exceptions.ResourceNotFoundException;
+import com.productservice.mappers.DtoMapper;
+import com.productservice.model.Category;
 import com.productservice.model.Product;
 import com.productservice.repository.ProductRepository;
 import com.productservice.service.CategoryService;
 import com.productservice.service.ProductService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 @Service
@@ -15,34 +18,35 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository repository;
     private final  CategoryService categoryService;
-    private final ProductMapper productMapper;
-    public ProductServiceImpl(CategoryService categoryService, ProductRepository repository, ProductMapper productMapper) {
+    private final DtoMapper dtoMapper;
+    public ProductServiceImpl(CategoryService categoryService, ProductRepository repository, DtoMapper dtoMapper) {
         this.repository = repository;
         this.categoryService = categoryService;
-        this.productMapper = productMapper;
+        this.dtoMapper = dtoMapper;
     }
 
 
     public Optional<ProductDto> getProductById(Long id) {
         return repository.findById(id)
-                .map(productMapper::convertToDto);
+                .map(dtoMapper::convertToDto);
     }
 
-    //@Transactional
+    @Transactional
     public ProductDto addNewProduct(CreateProductRequestDto productRequestDto) {
-        if(!categoryService.existsById(productRequestDto.category().getCategoryId()))
-        {
-            throw new IllegalArgumentException("Category not exists");
-        }
+
+        Category category = categoryService.getCategoryEntityById(productRequestDto.categoryId())
+                .orElseThrow(()-> new ResourceNotFoundException("Category " + productRequestDto.categoryId() + " not found"));
+
         Product newProduct = new Product();
         newProduct.setName(productRequestDto.name());
         newProduct.setPrice(productRequestDto.price());
         newProduct.setDescription(productRequestDto.description());
         newProduct.setIsActive(productRequestDto.isActive());
         newProduct.setWeight(productRequestDto.weight());
-
+        newProduct.setCategory(category);
         Product savedProduct = repository.save(newProduct);
         //kafka.
-        return productMapper.convertToDto(savedProduct);
+
+        return dtoMapper.convertToDto(savedProduct);
     }
 }

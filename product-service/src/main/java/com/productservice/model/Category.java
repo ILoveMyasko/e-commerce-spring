@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 @Setter
 public class Category {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "category_id", nullable = false)
     Long categoryId;
 
     @Column(name = "name", nullable = false, unique = true, length = 50)
