@@ -26,17 +26,16 @@ public class ProductServiceImpl implements ProductService {
     }
 
 
-    public Optional<ProductDto> getProductById(Long id) {
+    public ProductDto getProductById(Long id) {
         return repository.findById(id)
-                .map(dtoMapper::convertToDto);
+                .map(dtoMapper::convertToDto)
+                .orElseThrow(()-> new ResourceNotFoundException("Product not found with id:" + id));
     }
 
     @Transactional
     public ProductDto addNewProduct(CreateProductRequestDto productRequestDto) {
 
-        Category category = categoryService.getCategoryEntityById(productRequestDto.categoryId())
-                .orElseThrow(()-> new ResourceNotFoundException("Category " + productRequestDto.categoryId() + " not found"));
-
+        Category category = categoryService.getCategoryEntityById(productRequestDto.categoryId());//throws if not found
         Product newProduct = new Product();
         newProduct.setName(productRequestDto.name());
         newProduct.setPrice(productRequestDto.price());

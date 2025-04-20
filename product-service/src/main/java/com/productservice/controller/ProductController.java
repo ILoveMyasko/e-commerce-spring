@@ -2,7 +2,6 @@ package com.productservice.controller;
 
 import com.productservice.dto.CreateProductRequestDto;
 import com.productservice.dto.ProductDto;
-import com.productservice.model.Product;
 import com.productservice.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -35,9 +34,7 @@ public class ProductController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ProductDto> getProduct(@PathVariable long id) {
-        return productService.getProductById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return ResponseEntity.ok(productService.getProductById(id));
 
     }
 }

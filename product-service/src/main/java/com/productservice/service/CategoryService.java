@@ -13,10 +13,9 @@ import java.util.Optional;
 public interface CategoryService {
     boolean existsById(Long id);
 
-
     CategoryDto addNewCategory(CreateCategoryRequestDto createCategoryRequestDto);
 
-    Optional<CategoryDto> getCategoryById(Long id);
+    CategoryDto getCategoryById(Long id);
 
-    Optional<Category> getCategoryEntityById(Long id);
+    Category getCategoryEntityById(Long id);
  }

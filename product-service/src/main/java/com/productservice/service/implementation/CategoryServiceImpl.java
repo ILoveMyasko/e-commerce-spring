@@ -2,6 +2,8 @@ package com.productservice.service.implementation;
 
 import com.productservice.dto.CategoryDto;
 import com.productservice.dto.CreateCategoryRequestDto;
+import com.productservice.exceptions.ResourceDuplicateException;
+import com.productservice.exceptions.ResourceNotFoundException;
 import com.productservice.mappers.DtoMapper;
 import com.productservice.model.Category;
 import com.productservice.repository.CategoryRepository;
@@ -35,7 +37,7 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDto addNewCategory(CreateCategoryRequestDto createCategoryRequestDto) {
         if (existsByName(createCategoryRequestDto.name()))
         {
-            throw new IllegalArgumentException("Category name already exists");
+            throw new ResourceDuplicateException("Category " + createCategoryRequestDto.name() + " already exists");
         }
         Category category = new Category();
         category.setName(createCategoryRequestDto.name());
@@ -44,14 +46,16 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
 
-    public Optional<CategoryDto> getCategoryById(Long id) {
+    public CategoryDto getCategoryById(Long id) {
         return categoryRepository.findById(id)
-                .map(dtoMapper::convertToDto);
+                .map(dtoMapper::convertToDto)
+                .orElseThrow(() -> new ResourceNotFoundException("Category " + id + " not found"));
     }
 
     @Override
-    public Optional<Category> getCategoryEntityById(Long id) {
-        return categoryRepository.findById(id);
+    public Category getCategoryEntityById(Long id) {
+        return categoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Category " + id + " not found"));
     }
 
 
