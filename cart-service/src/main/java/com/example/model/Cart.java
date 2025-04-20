@@ -18,13 +18,15 @@ public class Cart {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long cartId;
+    private Long id;
     //unique
-//    @Column(name = "used_id", nullable = false)
-//    private Long userId;
+    //    @Column(name = "used_id", nullable = false)
+    //    private Long userId;
     @Column(name = "session_id", unique = true, nullable = false, length = 36)
     private String sessionId;
 
+    //CascadeType.Persist (part of all) will only save cartItems to corresponding table
+    // if NEWLY created cart has items (Set) not empty.
     @OneToMany(
             mappedBy = "cart", // Maps to the 'cart' field in CartItem entity
             cascade = CascadeType.ALL, // Persist/Merge/Remove CartItems when Cart is persisted/merged/removed
@@ -39,7 +41,6 @@ public class Cart {
     @Column(name = "updated_at", nullable = false)
     private ZonedDateTime updatedAt;
 
-
     @PrePersist
     protected void onCreate() {
         createdAt = updatedAt = ZonedDateTime.now();
@@ -49,4 +50,15 @@ public class Cart {
     protected void onUpdate() {
         updatedAt = ZonedDateTime.now();
     }
+
+    public void addItem(CartItem item) {
+        items.add(item);
+        item.setCart(this); // Set the back-reference
+    }
+
+    public void removeItem(CartItem item) {
+        items.remove(item);
+        item.setCart(null); // triggers orphan removal
+    }
+
 }

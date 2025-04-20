@@ -14,14 +14,14 @@ import java.math.BigDecimal;
 public class CartItem {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id", nullable = false)
     private Cart cart;
 
     @Column(name = "product_id", nullable = false)
-    private long productId;
+    private Long productId;
 
     @Column(name = "quantity", nullable = false)
     private int quantity;
@@ -30,7 +30,7 @@ public class CartItem {
     @Column(name = "price", nullable = false, precision = 19, scale = 2)
     private BigDecimal price;
 
-    //race condition simple safety
+    //race condition simple safety?
     @Version
     private Long version;
 }
