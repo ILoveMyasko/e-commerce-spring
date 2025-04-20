@@ -1,4 +1,5 @@
 rootProject.name = 'e-commerce'
 include 'user-service'
 include 'product-service'
+include 'cart-service'
 
