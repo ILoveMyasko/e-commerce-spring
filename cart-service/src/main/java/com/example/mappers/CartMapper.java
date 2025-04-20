@@ -18,11 +18,6 @@ public class CartMapper {
         if (cart == null) {
             return null;
         }
-
-//        BigDecimal totalPrice = cart.getItems().stream()
-//                .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
-//                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
         return new CartDto(
                 cart.getSessionId(),
                 cart.getItems() == null ? Collections.emptyList() : cart.getItems().stream()
