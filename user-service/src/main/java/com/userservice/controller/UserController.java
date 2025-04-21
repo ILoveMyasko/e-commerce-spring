@@ -18,8 +18,6 @@ import java.net.URI;
 public class UserController {
 
     private final UserService userService;
-    //private final UserMapper userMapper;
-    //TODO userMapper belongs to service
     public UserController(UserService userService) {
         this.userService = userService;
     }
