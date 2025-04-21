@@ -30,7 +30,7 @@ public class CartItem {
     @Column(name = "price", nullable = false, precision = 19, scale = 2)
     private BigDecimal price;
 
-    //race condition simple safety?
+    //race condition simple safety? Optimistic Lock
     @Version
     private Long version;
 }

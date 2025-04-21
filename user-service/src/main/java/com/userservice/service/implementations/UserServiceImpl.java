@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
         this.userMapper = userMapper;
     }
 
-    //@Transactional()
+    @Transactional
     public UserDto registerNewUser(CreateUserRequestDto createUserRequestDto){
         //maybe put it in other checker function? don't think so
         if (userRepository.existsByUsername(createUserRequestDto.username()))

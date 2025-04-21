@@ -34,4 +34,6 @@ public class CategoryController {
     public ResponseEntity<CategoryDto> getCategory(@PathVariable long id) {
         return ResponseEntity.ok(categoryService.getCategoryById(id));
     }
+
+
 }

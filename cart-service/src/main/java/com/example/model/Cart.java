@@ -19,19 +19,17 @@ public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    //unique
-    //    @Column(name = "used_id", nullable = false)
-    //    private Long userId;
+
     @Column(name = "session_id", unique = true, nullable = false, length = 36)
     private String sessionId;
 
     //CascadeType.Persist (part of all) will only save cartItems to corresponding table
     // if NEWLY created cart has items (Set) not empty.
     @OneToMany(
-            mappedBy = "cart", // Maps to the 'cart' field in CartItem entity
-            cascade = CascadeType.ALL, // Persist/Merge/Remove CartItems when Cart is persisted/merged/removed
-            orphanRemoval = true, // Automatically remove CartItems from DB if they are removed from this collection
-            fetch = FetchType.LAZY // Load items only when explicitly requested
+            mappedBy = "cart",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true, // extra safety layer, can manage items solely from this class but its unclear
+            fetch = FetchType.LAZY
     )
     private Set<CartItem> items = new HashSet<>();
 

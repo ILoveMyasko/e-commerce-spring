@@ -6,5 +6,5 @@ import java.util.List;
 public record CartDto(
         String sessionId, // TODO hide? from client if preferred
         List<CartItemDto> items
-        //BigDecimal totalPrice // Calculated field
+        //BigDecimal totalPrice //
 ) {}
