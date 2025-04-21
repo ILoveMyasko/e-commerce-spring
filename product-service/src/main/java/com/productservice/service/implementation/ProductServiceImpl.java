@@ -12,22 +12,22 @@ import com.productservice.service.ProductService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import java.util.List;
 @Service
 public class ProductServiceImpl implements ProductService {
 
-    private final ProductRepository repository;
+    private final ProductRepository productRepository;
     private final  CategoryService categoryService;
     private final DtoMapper dtoMapper;
-    public ProductServiceImpl(CategoryService categoryService, ProductRepository repository, DtoMapper dtoMapper) {
-        this.repository = repository;
+    public ProductServiceImpl(CategoryService categoryService, ProductRepository productRepository, DtoMapper dtoMapper) {
+        this.productRepository = productRepository;
         this.categoryService = categoryService;
         this.dtoMapper = dtoMapper;
     }
 
     @Transactional(readOnly = true)
     public ProductDto getProductById(Long id) {
-        return repository.findById(id)
+        return productRepository.findById(id)
                 .map(dtoMapper::convertToDto)
                 .orElseThrow(()-> new ResourceNotFoundException("Product not found with id:" + id));
     }
@@ -43,9 +43,17 @@ public class ProductServiceImpl implements ProductService {
         newProduct.setIsActive(productRequestDto.isActive());
         newProduct.setWeight(productRequestDto.weight());
         newProduct.setCategory(category);
-        Product savedProduct = repository.save(newProduct);
+        Product savedProduct = productRepository.save(newProduct);
         //kafka.
 
         return dtoMapper.convertToDto(savedProduct);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProductDto> getAllProducts() {
+        return productRepository.findAll()
+                .stream()
+                .map(dtoMapper::convertToDto)
+                .toList();
     }
 }
