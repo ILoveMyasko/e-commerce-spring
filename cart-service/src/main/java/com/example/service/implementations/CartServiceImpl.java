@@ -26,17 +26,15 @@ public class CartServiceImpl implements CartService {
     private final CartItemRepository cartItemRepository;
     private final CartMapper cartMapper;
     private final RestTemplate restTemplate;
-    private final LocalContainerEntityManagerFactoryBean entityManagerFactory2;
     @Value("${product-service.base-url}")
     private String productServiceBaseUrl;
 
     public CartServiceImpl(CartRepository cartRepository, CartItemRepository cartItemRepository,
-                           CartMapper cartMapper, RestTemplate restTemplate, LocalContainerEntityManagerFactoryBean entityManagerFactory2) {
+                           CartMapper cartMapper, RestTemplate restTemplate) {
         this.cartRepository = cartRepository;
         this.cartItemRepository = cartItemRepository;
         this.cartMapper = cartMapper;
         this.restTemplate = restTemplate;
-        this.entityManagerFactory2 = entityManagerFactory2;
     }
 
 
