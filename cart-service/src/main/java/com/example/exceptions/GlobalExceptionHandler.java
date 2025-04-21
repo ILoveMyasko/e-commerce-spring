@@ -1,5 +1,6 @@
 package com.example.exceptions;
 
+import jakarta.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -34,8 +35,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     //copy-pasted from product-service
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
-            MethodArgumentNotValidException ex, HttpHeaders headers,
-            HttpStatusCode status, WebRequest request) {
+            MethodArgumentNotValidException ex,
+            @Nonnull HttpHeaders  headers,
+            @Nonnull HttpStatusCode status,
+            @Nonnull WebRequest request) {
 
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
