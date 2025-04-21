@@ -12,6 +12,7 @@ import com.example.repository.CartRepository;
 import com.example.service.CartService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -35,19 +36,19 @@ public class CartServiceImpl implements CartService {
         this.restTemplate = restTemplate;
     }
 
-
+    @Transactional
     public CartDto getCartBySessionId(String sessionId) {
         Cart cart = findOrCreateCartBySessionId(sessionId);
         return cartMapper.convertToDto(cart);
     }
-
+    //maybe lock?
     @Transactional
     public CartDto addItemBySession(String sessionId, AddItemRequestDto addItemRequestDto) {
 
         try {
             restTemplate.getForEntity(productServiceBaseUrl + "/products/" + addItemRequestDto.productId(),
                     String.class);
-        } catch (Exception ex) {
+        } catch (RuntimeException ex) { //runtime?
             if (ex.getClass() == HttpClientErrorException.NotFound.class) {
                 throw new ResourceNotFoundException(ex.getMessage());
             } else {
@@ -94,7 +95,8 @@ public class CartServiceImpl implements CartService {
         return cartMapper.convertToDto(updatedCart);
     }
 
-    private Cart findOrCreateCartBySessionId(String sessionId) {
+    @Transactional(propagation = Propagation.REQUIRED) //explicitly default
+    public Cart findOrCreateCartBySessionId(String sessionId) {
         return cartRepository.findBySessionId(sessionId)
                 .orElseGet(() -> {
                     Cart newCart = new Cart();

@@ -25,7 +25,7 @@ public class ProductServiceImpl implements ProductService {
         this.dtoMapper = dtoMapper;
     }
 
-
+    @Transactional(readOnly = true)
     public ProductDto getProductById(Long id) {
         return repository.findById(id)
                 .map(dtoMapper::convertToDto)

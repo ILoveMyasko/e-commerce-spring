@@ -11,6 +11,7 @@ import com.productservice.service.CategoryService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -25,10 +26,11 @@ public class CategoryServiceImpl implements CategoryService {
         this.dtoMapper = dtoMapper;
     }
 
+    @Transactional(readOnly = true)
     public boolean existsById(Long id) {
         return categoryRepository.existsById(id);
     }
-
+    @Transactional(readOnly = true)
     public boolean existsByName(String name) {
         return categoryRepository.existsByName(name);
     }
@@ -45,17 +47,25 @@ public class CategoryServiceImpl implements CategoryService {
         return dtoMapper.convertToDto(savedCategory);
     }
 
-
+    @Transactional(readOnly = true)
     public CategoryDto getCategoryById(Long id) {
         return categoryRepository.findById(id)
                 .map(dtoMapper::convertToDto)
                 .orElseThrow(() -> new ResourceNotFoundException("Category " + id + " not found"));
     }
 
-    @Override
+    @Transactional(readOnly = true)
     public Category getCategoryEntityById(Long id) {
         return categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Category " + id + " not found"));
+    }
+
+    @Transactional(readOnly = true)
+    public List<CategoryDto> getAllCategories() {
+        return categoryRepository.findAll()
+                .stream()
+                .map(dtoMapper::convertToDto)
+                .toList();
     }
 
 
