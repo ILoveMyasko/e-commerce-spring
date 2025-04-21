@@ -7,6 +7,7 @@ import com.productservice.dto.ProductDto;
 import com.productservice.model.Category;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -18,4 +19,6 @@ public interface CategoryService {
     CategoryDto getCategoryById(Long id);
 
     Category getCategoryEntityById(Long id);
+
+    List<CategoryDto> getAllCategories();
  }

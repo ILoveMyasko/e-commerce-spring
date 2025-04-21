@@ -23,8 +23,6 @@ public class Cart {
     @Column(name = "session_id", unique = true, nullable = false, length = 36)
     private String sessionId;
 
-    //CascadeType.Persist (part of all) will only save cartItems to corresponding table
-    // if NEWLY created cart has items (Set) not empty.
     @OneToMany(
             mappedBy = "cart",
             cascade = CascadeType.ALL,
