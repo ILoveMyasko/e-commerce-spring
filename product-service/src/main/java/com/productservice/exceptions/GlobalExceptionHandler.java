@@ -52,7 +52,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 "Validation Failed",
                 getRequestPath(request),
                 LocalDateTime.now(),
-                errors // Include field-specific errors
+                errors
         );
        // log.warn("Validation failed for request {}: {}", getRequestPath(request), errors);
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
