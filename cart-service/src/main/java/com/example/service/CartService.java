@@ -12,4 +12,5 @@ public interface CartService {
     CartDto getCartBySessionId(String sessionId);
 
     CartDto addItemBySession(String sessionId, AddItemRequestDto addItemRequestDto);
+    CartDto deleteItemBySession(String sessionId, Long productId);
 }

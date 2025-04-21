@@ -2,14 +2,12 @@ package com.example.controllers;
 
 import com.example.dto.AddItemRequestDto;
 import com.example.dto.CartDto;
-import com.example.exceptions.ProductNotExistsException;
 import com.example.service.CartService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,6 +43,17 @@ public class CartController {
         CartDto cartDto = cartService.getCartBySessionId(sessionId);
         return ResponseEntity.ok(cartDto);
     }
+
+    @DeleteMapping("/items/{id}")
+    public ResponseEntity<CartDto> removeItemFromCart(HttpServletRequest request,
+                                                      HttpServletResponse response,
+                                                      @PathVariable Long id){
+        String sessionId = getOrCreateCartSessionId(request, response);
+        CartDto cartDto = cartService.deleteItemBySession(sessionId, id);
+        return ResponseEntity.ok(cartDto);
+    }
+
+
 
     private String getOrCreateCartSessionId(HttpServletRequest request, HttpServletResponse response) {
         Cookie[] cookies = request.getCookies();

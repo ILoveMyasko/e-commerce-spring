@@ -2,7 +2,8 @@ package com.example.service.implementations;
 
 import com.example.dto.AddItemRequestDto;
 import com.example.dto.CartDto;
-import com.example.exceptions.ProductNotExistsException;
+import com.example.exceptions.ResourceNotFoundException;
+import com.example.exceptions.ServiceCommunicationException;
 import com.example.mappers.CartMapper;
 import com.example.model.Cart;
 import com.example.model.CartItem;
@@ -36,7 +37,8 @@ public class CartServiceImpl implements CartService {
 
 
     public CartDto getCartBySessionId(String sessionId) {
-        return null;
+        Cart cart = findOrCreateCartBySessionId(sessionId);
+        return cartMapper.convertToDto(cart);
     }
 
     @Transactional
@@ -47,15 +49,16 @@ public class CartServiceImpl implements CartService {
                     String.class);
         } catch (Exception ex) {
             if (ex.getClass() == HttpClientErrorException.NotFound.class) {
-                throw new ProductNotExistsException(ex.getMessage());
+                throw new ResourceNotFoundException(ex.getMessage());
             } else {
-                throw new ProductNotExistsException("Error communicating with Product service: " + ex.getMessage());
+                throw new ServiceCommunicationException("Error communicating with Product service: " + ex.getMessage());
             }
         }
         //if cart not exists we create new
         Cart sessionCart = findOrCreateCartBySessionId(sessionId);
         Optional<CartItem> existingItemOpt = cartItemRepository.
                 findByCartAndProductId(sessionCart, addItemRequestDto.productId());
+
         //if an item exists we just increment quantity, race cond safe?
         if (existingItemOpt.isPresent()) {
             CartItem existingItem = existingItemOpt.get();
@@ -67,12 +70,27 @@ public class CartServiceImpl implements CartService {
             cartItem.setProductId(addItemRequestDto.productId());
             cartItem.setQuantity(addItemRequestDto.quantity());
             cartItem.setPrice(addItemRequestDto.price());
-            sessionCart.addItem(cartItem);// double add?
+            sessionCart.addItem(cartItem);
             cartItemRepository.save(cartItem);
         }
 
         Cart updatedCart = cartRepository.findById(sessionCart.getId()).orElse(sessionCart);
-        System.out.println(updatedCart.getItems());
+        return cartMapper.convertToDto(updatedCart);
+    }
+
+    @Transactional
+    public CartDto deleteItemBySession(String sessionId, Long productId) {
+
+        Cart sessionCart = cartRepository.findBySessionId(sessionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cart not found for session: " + sessionId));
+        CartItem itemToDelete = cartItemRepository.findByCartIdAndProductId(sessionCart.getId(), productId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Product with ID " + productId + " not found in cart for session " + sessionId)
+                );
+
+        sessionCart.removeItem(itemToDelete);
+        cartRepository.save(sessionCart);
+        Cart updatedCart = cartRepository.findById(sessionCart.getId()).orElse(sessionCart);
         return cartMapper.convertToDto(updatedCart);
     }
 
