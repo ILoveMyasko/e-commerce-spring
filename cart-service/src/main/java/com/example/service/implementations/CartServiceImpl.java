@@ -9,7 +9,9 @@ import com.example.model.CartItem;
 import com.example.repository.CartItemRepository;
 import com.example.repository.CartRepository;
 import com.example.service.CartService;
+import jakarta.persistence.LockModeType;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,13 +44,12 @@ public class CartServiceImpl implements CartService {
         return null;
     }
 
-
     @Transactional
     public CartDto addItemBySession(String sessionId, AddItemRequestDto addItemRequestDto) {
 
         try {
-            restTemplate.getForEntity(productServiceBaseUrl + "/products/" +
-                    addItemRequestDto.productId(), String.class); //hardcoded and looks unsafe
+            restTemplate.getForEntity(productServiceBaseUrl + "/products/" + addItemRequestDto.productId(),
+                    String.class);
         } catch (Exception ex) {
             if (ex.getClass() == HttpClientErrorException.NotFound.class) {
                 throw new ProductNotExistsException(ex.getMessage());
@@ -58,9 +59,9 @@ public class CartServiceImpl implements CartService {
         }
         //if cart not exists we create new
         Cart sessionCart = findOrCreateCartBySessionId(sessionId);
-        //if an item exists we just increment quantity
         Optional<CartItem> existingItemOpt = cartItemRepository.
                 findByCartAndProductId(sessionCart, addItemRequestDto.productId());
+        //if an item exists we just increment quantity, race cond safe?
         if (existingItemOpt.isPresent()) {
             CartItem existingItem = existingItemOpt.get();
             existingItem.setQuantity(existingItem.getQuantity() + addItemRequestDto.quantity());

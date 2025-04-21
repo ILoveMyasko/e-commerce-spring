@@ -20,7 +20,7 @@ import java.util.UUID;
 public class CartController {
 
     private static final String CART_SESSION_COOKIE_NAME = "cartSessionId";
-    @Value("${app.cart.cookie.max-age-seconds}") // Inject value from properties
+    @Value("${app.cart.cookie.max-age-seconds}")
     private int COOKIE_MAX_AGE_SECONDS;
     private final CartService cartService;
 
@@ -38,13 +38,14 @@ public class CartController {
         CartDto updatedCart = cartService.addItemBySession(sessionId, addItemRequestDto);
         return ResponseEntity.ok(updatedCart);
     }
-
-    @GetMapping
+//return 1 if empty
+    @GetMapping("/items")
     public ResponseEntity<CartDto> getCart(HttpServletRequest request, HttpServletResponse response) {
-        String sessionId = getOrCreateCartSessionId(request, response); // Get or create session
+        String sessionId = getOrCreateCartSessionId(request, response);
         CartDto cartDto = cartService.getCartBySessionId(sessionId);
         return ResponseEntity.ok(cartDto);
     }
+
     private String getOrCreateCartSessionId(HttpServletRequest request, HttpServletResponse response) {
         Cookie[] cookies = request.getCookies();
         String sessionId = null;
