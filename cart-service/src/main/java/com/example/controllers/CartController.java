@@ -62,19 +62,16 @@ public class CartController {
         if (sessionId == null || sessionId.isBlank()) {
             sessionId = UUID.randomUUID().toString();
             Cookie newCookie = new Cookie(CART_SESSION_COOKIE_NAME, sessionId);
-            newCookie.setPath("/"); // Available for whole site
+            newCookie.setPath("/");
             newCookie.setHttpOnly(true); // Protect from client-side script access
             newCookie.setMaxAge(COOKIE_MAX_AGE_SECONDS);
             // newCookie.setSecure(true); // IMPORTANT: Enable this if using HTTPS!
-            newCookie.setAttribute("SameSite", "Lax"); // Good default for CSRF protection
+            newCookie.setAttribute("SameSite", "Lax"); //CSRF protection
             response.addCookie(newCookie);
         }
         return sessionId;
     }
 
-    @ExceptionHandler(ProductNotExistsException.class)
-    public ResponseEntity<String> handleProductNotExistsException(ProductNotExistsException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-    }
+
 
 }
